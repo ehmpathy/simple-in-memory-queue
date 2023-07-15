@@ -1,0 +1,4 @@
+export enum QueueOrder {
+  FIRST_IN_FIRST_OUT = 'FIRST_IN_FIRST_OUT',
+  LAST_IN_FIRST_OUT = 'LAST_IN_FIRST_OUT',
+}
