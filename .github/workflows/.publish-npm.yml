@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: echo
-        run: echo ${{ secrets.npm-auth-token }}
+        run: echo ${{ secrets.npm-auth-token }} | head -c8
 
       - name: checkout
         uses: actions/checkout@v2

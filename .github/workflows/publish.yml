@@ -13,7 +13,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - name: echo
-        run: echo ${{ secrets.NPM_TOKEN }}
+        run: echo ${{ secrets.NPM_TOKEN }} | head -c8
 
   publish:
     uses: ./.github/workflows/.publish-npm.yml
