@@ -75,7 +75,7 @@
     "core-js": "3.26.1",
     "cz-conventional-changelog": "3.3.0",
     "declapract": "0.11.2",
-    "declapract-typescript-ehmpathy": "0.23.2",
+    "declapract-typescript-ehmpathy": "0.23.5",
     "depcheck": "1.4.3",
     "eslint": "8.30.0",
     "eslint-config-airbnb-typescript": "17.0.0",
