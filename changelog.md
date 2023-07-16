@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.5](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.4...v1.1.5) (2023-07-16)
+
+
+### Bug Fixes
+
+* **cicd:** remove artifacts from testing ([83b0424](https://github.com/ehmpathy/simple-in-memory-queue/commit/83b0424ac4bbe29c372e7770ce2f8dec0549cfd7))
+* **cicd:** set registry-url on publish setup-node ([7ba45ee](https://github.com/ehmpathy/simple-in-memory-queue/commit/7ba45ee2d05f7391b3941755317af4a3a983e598))
+
 ## [1.1.4](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.3...v1.1.4) (2023-07-16)
 
 
