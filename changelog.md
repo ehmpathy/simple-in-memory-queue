@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.1...v1.1.2) (2023-07-16)
+
+
+### Bug Fixes
+
+* **deploy:** bump to use new secret ([22be44a](https://github.com/ehmpathy/simple-in-memory-queue/commit/22be44aacf6204aaf6ccb38d5ba845d8aba77d14))
+
 ## [1.1.1](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.0...v1.1.1) (2023-07-16)
 
 
