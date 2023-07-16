@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.0...v1.1.1) (2023-07-16)
+
+
+### Bug Fixes
+
+* **cicd:** make sure to reference secrets correctly ([98ce416](https://github.com/ehmpathy/simple-in-memory-queue/commit/98ce416d387e9016ae2ed926384ec0dec28a3c84))
+
 ## [1.1.0](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.0.0...v1.1.0) (2023-07-16)
 
 
