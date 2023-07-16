@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.6](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.5...v1.1.6) (2023-07-16)
+
+
+### Bug Fixes
+
+* **pkg:** export queue order enum ([f367f59](https://github.com/ehmpathy/simple-in-memory-queue/commit/f367f59bd2bbfd6c93336a09adb4cadab758368a))
+* **practs:** bump best practs ([6f44abf](https://github.com/ehmpathy/simple-in-memory-queue/commit/6f44abf5000bcabfb7cdeeadaa257da48cf61b9e))
+
 ## [1.1.5](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.4...v1.1.5) (2023-07-16)
 
 
