@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.2...v1.1.3) (2023-07-16)
+
+
+### Bug Fixes
+
+* **cicd:** attempt publishing with prior npm versions ([99d5cf3](https://github.com/ehmpathy/simple-in-memory-queue/commit/99d5cf3aecae831b7641fd41c29601145e1e81a9))
+
 ## [1.1.2](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.1...v1.1.2) (2023-07-16)
 
 
