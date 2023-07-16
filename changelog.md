@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.4](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.3...v1.1.4) (2023-07-16)
+
+
+### Bug Fixes
+
+* **cicd:** show head of secret in debug logs ([bc1ad14](https://github.com/ehmpathy/simple-in-memory-queue/commit/bc1ad14adfb5b14bbfb8f2f0ec59ae17645f31bb))
+* **cicd:** try again ([cfd95c2](https://github.com/ehmpathy/simple-in-memory-queue/commit/cfd95c207a85a65bc949b23cc6690d03bfa5a441))
+
 ## [1.1.3](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.2...v1.1.3) (2023-07-16)
 
 
