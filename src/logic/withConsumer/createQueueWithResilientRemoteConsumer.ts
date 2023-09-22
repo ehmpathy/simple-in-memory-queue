@@ -221,7 +221,7 @@ export const createQueueWithResilientRemoteConsumer = <T>({
 
   // subscribe to the delay queue, ensuring a consumer will be invoked after each delay expires
   queueDelayed.on.push.subscribe({
-    consumer: async ({ event: { items } }) => {
+    consumer: async ({ items }) => {
       items.forEach((item) => {
         const millisecondsUntilReady = item.delayedUntilMse - getMseNow();
         if (process.env.NODE_ENV === 'test')

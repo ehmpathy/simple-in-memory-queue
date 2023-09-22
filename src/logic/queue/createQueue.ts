@@ -1,4 +1,4 @@
-import { EventStreamPubSub } from 'event-stream-pubsub';
+import { EventStream } from 'event-stream-pubsub';
 
 import { QueueOrder } from '../../domain/constants';
 import { split } from './split';
@@ -38,9 +38,9 @@ export interface Queue<T> {
    * event streams that can be subscribed to
    */
   on: {
-    push: Omit<EventStreamPubSub<{ items: T[] }>, 'publish'>;
-    peek: EventStreamPubSub<{ items: T[] }>;
-    pop: EventStreamPubSub<{ items: T[] }>;
+    push: Omit<EventStream<{ items: T[] }>, 'publish'>;
+    peek: EventStream<{ items: T[] }>;
+    pop: EventStream<{ items: T[] }>;
   };
 }
 
@@ -60,9 +60,9 @@ export const createQueue = <T>({ order }: { order: QueueOrder }): Queue<T> => {
 
   // instantiate the event streams
   const on = {
-    push: new EventStreamPubSub<{ items: T[] }>(),
-    peek: new EventStreamPubSub<{ items: T[] }>(),
-    pop: new EventStreamPubSub<{ items: T[] }>(),
+    push: new EventStream<{ items: T[] }>(),
+    peek: new EventStream<{ items: T[] }>(),
+    pop: new EventStream<{ items: T[] }>(),
   };
 
   // define the methods for interacting with the data store
@@ -70,18 +70,18 @@ export const createQueue = <T>({ order }: { order: QueueOrder }): Queue<T> => {
     push: (item: T | T[]) => {
       const items = Array.isArray(item) ? item : [item];
       data.push(...items);
-      on.push.publish({ event: { items } });
+      on.push.publish({ items });
     },
     peek: (start?: number, end?: number) => {
       const slice = castOptionalStartEndToSlice(start, end);
       const { selection } = split({ data, order, slice });
-      on.peek.publish({ event: { items: selection } });
+      on.peek.publish({ items: selection });
       return selection;
     },
     pop: (start?: number, end?: number) => {
       const slice = castOptionalStartEndToSlice(start, end);
       const { selection, remainder } = split({ data, order, slice });
-      on.pop.publish({ event: { items: selection } });
+      on.pop.publish({ items: selection });
       data = remainder; // update the data to remove the selection
       return selection;
     },
