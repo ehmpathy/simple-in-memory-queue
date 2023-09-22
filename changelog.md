@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.7](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.6...v1.1.7) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** bump event-stream-pubsub to latest ([56a32ce](https://github.com/ehmpathy/simple-in-memory-queue/commit/56a32ce7741070441fa3c1fc127604577d484f71))
+
 ## [1.1.6](https://github.com/ehmpathy/simple-in-memory-queue/compare/v1.1.5...v1.1.6) (2023-07-16)
 
 
