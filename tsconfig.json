@@ -10,13 +10,29 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "outDir": "dist",
-    "target": "es6"
+    "target": "es2020",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "*"
+      ],
+      "@src/*": [
+        "src/*"
+      ]
+    },
+    "incremental": true,
+    "module": "node16",
+    "moduleResolution": "node16"
   },
-  "extends": "@tsconfig/node-lts-strictest/tsconfig.json",
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json",
+    "@tsconfig/node20/tsconfig.json"
+  ],
   "include": [
     "**/*.ts"
   ],
   "exclude": [
+    ".agent/.cache",
     "dist",
     "coverage",
     "node_modules"
