@@ -1,23 +1,29 @@
 # simple-in-memory-queue
 
-easily create and consume in-memory queues
+easily create and consume in-memory queues, for nodejs and the browser
+
+[![npm](https://img.shields.io/npm/v/simple-in-memory-queue.svg)](https://www.npmjs.com/package/simple-in-memory-queue)
+[![ci](https://github.com/ehmpathy/simple-in-memory-queue/actions/workflows/test.yml/badge.svg)](https://github.com/ehmpathy/simple-in-memory-queue/actions/workflows/test.yml)
+[![license](https://img.shields.io/npm/l/simple-in-memory-queue.svg)](https://github.com/ehmpathy/simple-in-memory-queue/blob/main/LICENSE)
 
 # install
 
-```
-npm install --save simple-in-memory-queue
+```sh
+npm install simple-in-memory-queue
 ```
 
 # use
 
-this library makes it easy to create and use a queue reliably in memory
-
 ### create a queue
 
 ```ts
-const queue = createQueue({
-  order: QueueOrder.FIRST_IN_FIRST_OUT
-});
+import { createQueue, QueueOrder } from 'simple-in-memory-queue';
+
+// fifo: first in, first out (default for most queues)
+const queue = createQueue<string>({ order: QueueOrder.FIRST_IN_FIRST_OUT });
+
+// lifo: last in, first out (stack behavior)
+const stack = createQueue<string>({ order: QueueOrder.LAST_IN_FIRST_OUT });
 ```
 
 ### push, peek, and pop
@@ -27,39 +33,41 @@ queue.push('a');
 queue.push(['b', 'c']);
 queue.push(['d', 'e']);
 
-// peek, to view items in the queue without dequeueing them
-queue.peek() // ['a']
-queue.peek(2) // ['a', 'b']
-queue.peek(queue.length) // ['a', 'b', 'c', 'd', 'e]
-queue.peek(2, queue.length) // ['c', 'd', 'e]
+// peek to view items without removal
+queue.peek();             // ['a']
+queue.peek(2);            // ['a', 'b']
+queue.peek(queue.length); // ['a', 'b', 'c', 'd', 'e']
+queue.peek(2, queue.length); // ['c', 'd', 'e'] — slice from index 2 to end
 
-// pop, to get and dequeue items from the queue
-queue.pop() // ['a']
-queue.pop() // ['b']
-queue.pop(2) // ['c', 'd']
+// pop to remove and return items
+queue.pop();              // ['a']
+queue.pop();              // ['b']
+queue.pop(2);             // ['c', 'd']
 ```
 
 ### listen to events
 
 ```ts
-queue.on.push.subscribe(({ item }) => console.log(item))
-queue.on.peek.subscribe(({ item }) => console.log(item))
-queue.on.pop.subscribe(({ item }) => console.log(item))
+queue.on.push.subscribe({ consumer: ({ items }) => console.log(items) });
+queue.on.peek.subscribe({ consumer: ({ items }) => console.log(items) });
+queue.on.pop.subscribe({ consumer: ({ items }) => console.log(items) });
 ```
 
 # use with consumers
 
-this library makes it easy to implement common patterns of consuming from queues
+common queue consumption patterns, ready to use
 
 ### debounce consumer
 
-create a queue with a consumer which gets called as soon as
-- the gap between subsequent events is more than `gap.milliseconds`
+waits for activity to stop before consumption. the consumer is called after `gap.milliseconds` of silence.
 
 usecases
-- consuming sequences of user input
+- wait for user to stop scroll, type, or resize before response
+- collapse rapid events into one
 
 ```ts
+import { createQueueWithDebounceConsumer } from 'simple-in-memory-queue';
+
 const queue = createQueueWithDebounceConsumer<string>({
   gap: { milliseconds: 100 },
   consumer: ({ items }) => console.log(items),
@@ -68,38 +76,43 @@ const queue = createQueueWithDebounceConsumer<string>({
 
 ### batch consumer
 
-create a queue with a consumer which gets called when either
-- an item in the queue older than `threshold.milliseconds` milliseconds
-- the number of the items in the queue exceeds a size of `threshold.size`
+collects items and flushes them in batches. the consumer is called when either:
+- the oldest item has waited `threshold.milliseconds`
+- the queue has `threshold.size` items
 
 usecases
-- consuming queued items in bulk, balancing consumption speed and invocation count
+- batch events before send to analytics
+- collect writes before flush to database
 
 ```ts
+import { createQueueWithBatchConsumer } from 'simple-in-memory-queue';
+
 const queue = createQueueWithBatchConsumer<string>({
   threshold: { milliseconds: 100, size: 5 },
   consumer: ({ items }) => console.log(items),
 });
 ```
 
-
 ### resilient remote consumer
 
-create a queue with a consumer which
-- gets called as soon as an item is available, with one item at a time, under a max concurrency specified by `threshold.concurrency`
-- resiliently handles failures
-  - retries errors from the consumer up to `threshold.retry` times, with a `delay.retry` delay between retries
-  - dequeues items that failed more than the `threshold.retry` times
-- intelligently handles failures
-  - consumes non-delayed items while there are items delayed due to retry
-  - pauses consumption of items from the queue when the number of failures in a row exceeds `threshold.pause` times
+processes items one at a time with automatic retry and failure recovery.
+
+features
+- **immediate**: calls consumer as soon as an item is available
+- **retry**: retries failed items up to `threshold.retry` times, with `delay.retry` between attempts
+- **discard**: drops items that exceed the retry threshold, calls `on.failurePermanent`
+- **pause**: stops consumption when `threshold.pause` items fail in a row, calls `on.pause`
+- **non-block**: processes other items while failed items wait for retry
 
 usecases
-- resiliently sending requests to remote apis
+- send requests to remote apis with automatic retry
+- deliver webhooks with failure recovery
 
 ```ts
+import { createQueueWithResilientRemoteConsumer } from 'simple-in-memory-queue';
+
 const queue = createQueueWithResilientRemoteConsumer<string>({
-  consumer: ({ item }) => console.log(item),
+  consumer: async ({ item }) => console.log(item),
   threshold: {
     concurrency: 1,
     retry: 3,
@@ -107,6 +120,70 @@ const queue = createQueueWithResilientRemoteConsumer<string>({
   },
   delay: {
     retry: 100,
+    visibility: 500, // optional: wait before first attempt
+  },
+  on: {
+    failureAttempt: ({ item, attempt, error }) => {
+      console.log(`attempt ${attempt} failed`, item, error);
+    },
+    failurePermanent: ({ item, error }) => {
+      console.error('permanently failed', item, error);
+    },
+    pause: ({ failures }) => {
+      console.error('queue paused', failures);
+    },
   },
 });
 ```
+
+# api
+
+## Queue\<T\>
+
+| method | description |
+|--------|-------------|
+| `push(item \| items[])` | add one or more items |
+| `peek(n?)` | view top n items without removal (default: 1) |
+| `peek(start, end)` | view items from start to end index |
+| `pop(n?)` | remove and return top n items (default: 1) |
+| `pop(start, end)` | remove items from start to end index |
+| `length` | current number of items |
+| `on.push` | event stream for push events |
+| `on.peek` | event stream for peek events |
+| `on.pop` | event stream for pop events |
+
+## QueueOrder
+
+| value | description |
+|-------|-------------|
+| `FIRST_IN_FIRST_OUT` | oldest items first (fifo) |
+| `LAST_IN_FIRST_OUT` | newest items first (lifo) |
+
+## createQueueWithDebounceConsumer
+
+| parameter | description |
+|-----------|-------------|
+| `gap.milliseconds` | time to wait after last push before consume |
+| `consumer` | `({ items }) => void` called with all queued items |
+
+## createQueueWithBatchConsumer
+
+| parameter | description |
+|-----------|-------------|
+| `threshold.milliseconds` | max time an item can wait before flush |
+| `threshold.size` | max items before flush |
+| `consumer` | `({ items }) => void` called with batch |
+
+## createQueueWithResilientRemoteConsumer
+
+| parameter | description |
+|-----------|-------------|
+| `threshold.concurrency` | max parallel consumers (currently: 1) |
+| `threshold.retry` | max retry attempts per item |
+| `threshold.pause` | sequential failures before pause |
+| `delay.retry` | milliseconds between retry attempts |
+| `delay.visibility` | milliseconds before first attempt (optional) |
+| `consumer` | `({ item }) => Promise<void>` called per item |
+| `on.failureAttempt` | `({ item, attempt, error }) => void` on retry |
+| `on.failurePermanent` | `({ item, error }) => void` when discarded |
+| `on.pause` | `({ failures }) => void` when paused |
